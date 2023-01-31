@@ -138,11 +138,11 @@ List<Widget> _slidableActionListL(int id) {
       label: 'Eliminar',
     ),
     SlidableAction(
-      onPressed: (_) {},
+      onPressed: (context) => Navigator.pushNamed(context, 'movimiento'),
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
-      icon: Icons.close,
-      label: 'Cerrar',
+      icon: Icons.edit,
+      label: 'Editar',
     ),
   ];
 }
