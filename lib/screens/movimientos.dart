@@ -1,5 +1,6 @@
 import 'package:finanzas_personales/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:math' show Random;
 import 'package:intl/intl.dart';
 
@@ -32,13 +33,16 @@ class MovimientosScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: GestureDetector(
-              onTap: () => Navigator.pushNamed(context, 'movimiento'),
-              child: ListView.separated(
-                itemCount: 15,
-                separatorBuilder: (_, __) => const Divider(thickness: 3),
-                itemBuilder: (context, index) => _Movimiento(),
+            child: ListView.separated(
+              itemBuilder: (context, index) => Slidable(
+                startActionPane: ActionPane(
+                  motion: const StretchMotion(),
+                  children: _slidableActionListL(index + 1),
+                ),
+                child: _Movimiento(),
               ),
+              itemCount: 13,
+              separatorBuilder: (_, __) => const Divider(),
             ),
           ),
         ],
@@ -119,4 +123,26 @@ class _Movimiento extends StatelessWidget {
       ),
     );
   }
+}
+
+List<Widget> _slidableActionListL(int id) {
+  return [
+    SlidableAction(
+      onPressed: (_) {
+        // todo: Delete item
+        print(id);
+      },
+      backgroundColor: const Color(0xFFFE4A49),
+      foregroundColor: Colors.white,
+      icon: Icons.delete,
+      label: 'Eliminar',
+    ),
+    SlidableAction(
+      onPressed: (_) {},
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
+      icon: Icons.close,
+      label: 'Cerrar',
+    ),
+  ];
 }
