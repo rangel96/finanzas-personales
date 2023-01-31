@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+## Versions
+- Flutter: 3.7.0
+- Android SDK: 33.0.0
+- Xcode: 14.2
+- Android Studio: 2021.2
+- IntelliJ IDEA Community Edition: 2022.2.3
+- VS Code: 1.74.3
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
