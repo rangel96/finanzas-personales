@@ -1,5 +1,6 @@
 import 'package:finanzas_personales/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 const List<String> list = <String>['Efectivo', 'Nu', 'Rappi Card', 'Banorte'];
 const List<String> tag = <String>['Suscripción', 'Housing', 'Comida', 'Renta'];
@@ -40,7 +41,9 @@ class MovimientoScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 35,
                     ),
-                    inputFormatters: const [],
+                    inputFormatters: [
+                      CurrencyInputFormatter(leadingSymbol: '\$'),
+                    ],
                     onChanged: (value) => formValues['money'] = value,
                   ),
                 ),
