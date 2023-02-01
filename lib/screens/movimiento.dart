@@ -14,7 +14,7 @@ class MovimientoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
     final Map<String, dynamic> formValues = {
-      'money': 0,
+      'amount': 0,
       'description': '',
       'pay': '',
       'tag': '',
@@ -45,7 +45,7 @@ class MovimientoScreen extends StatelessWidget {
                     inputFormatters: [
                       CurrencyInputFormatter(leadingSymbol: '\$'),
                     ],
-                    onChanged: (value) => formValues['money'] = value,
+                    onChanged: (value) => formValues['amount'] = value,
                   ),
                 ),
                 const SizedBox(height: 20),
