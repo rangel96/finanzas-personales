@@ -34,6 +34,7 @@ class MovimientoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 70),
                   child: TextFormField(
                     autofocus: true,
+                    textAlign: TextAlign.right,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: 'Precio',
