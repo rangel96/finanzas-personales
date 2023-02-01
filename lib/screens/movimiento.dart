@@ -12,6 +12,12 @@ class MovimientoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
+    final Map<String, dynamic> formValues = {
+      'money': 0,
+      'description': '',
+      'pay': '',
+      'tag': '',
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -34,6 +40,8 @@ class MovimientoScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 35,
                     ),
+                    inputFormatters: const [],
+                    onChanged: (value) => formValues['money'] = value,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -45,6 +53,7 @@ class MovimientoScreen extends StatelessWidget {
                     decoration: const InputDecoration(
                       labelText: 'Descripción',
                     ),
+                    onChanged: (value) => formValues['description'] = value,
                   ),
                 ),
                 Container(
@@ -58,6 +67,7 @@ class MovimientoScreen extends StatelessWidget {
                       );
                     }).toList(),
                     onChanged: (value) {
+                      formValues['pay'] = value;
                       print(value);
                     },
                   ),
@@ -73,6 +83,7 @@ class MovimientoScreen extends StatelessWidget {
                       );
                     }).toList(),
                     onChanged: (value) {
+                      formValues['tag'] = value;
                       print(value);
                     },
                   ),
@@ -80,7 +91,7 @@ class MovimientoScreen extends StatelessWidget {
               ],
             )),
       ),
-      bottomNavigationBar: _Footer(),
+      bottomNavigationBar: _Footer(formValues: formValues),
     );
   }
 }
@@ -113,19 +124,24 @@ class _DropdownButtonCustom extends StatelessWidget {
 }
 
 class _Footer extends StatelessWidget {
+  const _Footer({required this.formValues});
+
   void _onSummit() {
-    print('Enviar formulario');
+    print(formValues);
   }
 
   void _onReset() {
     print('Reset form');
   }
 
+  final Map<String, dynamic> formValues;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final double width = size.width / 2;
-    const double height = 55;
+    const double height = 60;
+    const double fontSize = 25;
 
     return Row(
       children: [
@@ -140,7 +156,7 @@ class _Footer extends StatelessWidget {
           child: const Text(
             'Agregar',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: fontSize,
               color: Colors.white,
             ),
           ),
@@ -156,7 +172,7 @@ class _Footer extends StatelessWidget {
           child: const Text(
             'Limpiar',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: fontSize,
               color: Colors.white,
             ),
           ),
