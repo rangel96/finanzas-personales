@@ -13,9 +13,23 @@ import '../models/_models.dart';
 
 // Variables globales
 const FontWeight _fontWeight = FontWeight.w600;
-final Random _random = Random();
-final DateTime now = DateTime.now();
 final numberFormat = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+
+final DateTime now = DateTime.now();
+final List<String> month = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre'
+];
 
 class MovimientosScreen extends StatelessWidget {
   const MovimientosScreen({Key? key}) : super(key: key);
@@ -29,7 +43,11 @@ class MovimientosScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
-        title: const Text('Movimientos', style: TextStyle(fontSize: 20)),
+        title: Text(
+          'Movimientos \n ${month[now.month - 1]}',
+          style: const TextStyle(fontSize: 20),
+          textAlign: TextAlign.center,
+        ),
       ),
       body: Column(
         children: [
