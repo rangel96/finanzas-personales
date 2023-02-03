@@ -1,7 +1,9 @@
-import 'package:finanzas_personales/models/_models.dart';
-import 'package:finanzas_personales/themes/app_theme.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+
+import 'package:finanzas_personales/models/_models.dart';
+import 'package:finanzas_personales/themes/app_theme.dart';
 
 const List<String> list = <String>['Efectivo', 'Nu', 'Rappi Card', 'Banorte'];
 const List<String> tag = <String>['Suscripción', 'Housing', 'Comida', 'Renta'];
@@ -30,7 +32,7 @@ class MovimientoScreen extends StatelessWidget {
     }
 
     return {
-      'amount': 0,
+      'amount': '\$0.00',
       'description': '',
       'pay': '',
       'tag': '',
@@ -39,7 +41,6 @@ class MovimientoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Reparar cuando no tenga el argumento
     final RouteSettings? settings = ModalRoute.of(context)?.settings;
 
     final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
@@ -135,10 +136,11 @@ class MovimientoScreen extends StatelessWidget {
 
 class _DropdownButtonCustom extends StatelessWidget {
   const _DropdownButtonCustom({
+    Key? key,
     required this.value,
     required this.items,
     required this.onChanged,
-  });
+  }) : super(key: key);
 
   final String value;
   final List<DropdownMenuItem<String>> items;
