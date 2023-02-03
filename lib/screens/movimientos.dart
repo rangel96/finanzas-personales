@@ -1,8 +1,15 @@
-import 'package:finanzas_personales/themes/app_theme.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:math' show Random;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'dart:math' show Random;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import 'package:finanzas_personales/providers/flutterfire.dart';
+import 'package:finanzas_personales/themes/app_theme.dart';
+
+import '../models/_models.dart';
 
 // Variables globales
 const FontWeight _fontWeight = FontWeight.w600;
@@ -15,6 +22,10 @@ class MovimientosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterFireProvider movProvider = Provider.of<FlutterFireProvider>(context);
+    List<ResponseRegistro> registros = movProvider.registros;
+    double sumTotal = Provider.of<FlutterFireProvider>(context).sumTotal;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
@@ -25,7 +36,7 @@ class MovimientosScreen extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
-              numberFormat.format(_random.nextInt(30000).toDouble()),
+              numberFormat.format(sumTotal),
               style: const TextStyle(
                 fontSize: 45,
                 fontWeight: _fontWeight,
@@ -37,11 +48,11 @@ class MovimientosScreen extends StatelessWidget {
               itemBuilder: (context, index) => Slidable(
                 startActionPane: ActionPane(
                   motion: const StretchMotion(),
-                  children: _slidableActionListL(index + 1),
+                  children: _slidableActionListL(registros[index]),
                 ),
-                child: _Movimiento(),
+                child: _Movimiento(movimiento: registros[index]),
               ),
-              itemCount: 13,
+              itemCount: registros.length,
               separatorBuilder: (_, __) => const Divider(),
             ),
           ),
@@ -75,6 +86,10 @@ class _Footer extends StatelessWidget {
 }
 
 class _Movimiento extends StatelessWidget {
+  const _Movimiento({required this.movimiento});
+
+  final ResponseRegistro movimiento;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,15 +100,18 @@ class _Movimiento extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Pago Spotify',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: _fontWeight,
+              Expanded(
+                child: Text(
+                  movimiento.description,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: _fontWeight,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Text(
-                numberFormat.format(_random.nextInt(500).toDouble()),
+                numberFormat.format(movimiento.amount),
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: _fontWeight,
@@ -105,7 +123,18 @@ class _Movimiento extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${now.day} - ${now.hour}:${now.minute} - Efectivo'),
+              Row(
+                children: [
+                  if (movimiento.fechaC.day > 9)
+                    Text('${movimiento.fechaC.day}')
+                  else
+                    Text('0${movimiento.fechaC.day}'),
+                  const SizedBox(width: 10, child: Text('-')),
+                  Text('${movimiento.fechaC.hour}:${movimiento.fechaC.minute}'),
+                  const SizedBox(width: 10, child: Text('-')),
+                  Text(movimiento.pay),
+                ],
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 15,
@@ -115,7 +144,11 @@ class _Movimiento extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.amber,
                 ),
-                child: const Icon(Icons.subscriptions_outlined, size: 15.0),
+                child: Icon(
+                  Icons.subscriptions_outlined,
+                  size: 15.0,
+                  semanticLabel: movimiento.tag,
+                ),
               ),
             ],
           ),
@@ -125,12 +158,12 @@ class _Movimiento extends StatelessWidget {
   }
 }
 
-List<Widget> _slidableActionListL(int id) {
+List<Widget> _slidableActionListL(ResponseRegistro movimiento) {
   return [
     SlidableAction(
       onPressed: (_) {
         // todo: Delete item
-        print(id);
+        print(movimiento.id);
       },
       backgroundColor: const Color(0xFFFE4A49),
       foregroundColor: Colors.white,
@@ -138,7 +171,11 @@ List<Widget> _slidableActionListL(int id) {
       label: 'Eliminar',
     ),
     SlidableAction(
-      onPressed: (context) => Navigator.pushNamed(context, 'movimiento'),
+      onPressed: (context) => Navigator.pushNamed(
+        context,
+        'movimiento',
+        arguments: movimiento,
+      ),
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
       icon: Icons.edit,

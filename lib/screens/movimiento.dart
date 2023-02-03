@@ -1,3 +1,4 @@
+import 'package:finanzas_personales/models/_models.dart';
 import 'package:finanzas_personales/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -9,16 +10,40 @@ class MovimientoScreen extends StatelessWidget {
   const MovimientoScreen({Key? key}) : super(key: key);
 
   // Variables
+  Map<String, dynamic> getJson([RouteSettings? settings]) {
+    if (settings?.arguments != null) {
+      ResponseRegistro movimiento = settings!.arguments as ResponseRegistro;
 
-  @override
-  Widget build(BuildContext context) {
-    final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
-    final Map<String, dynamic> formValues = {
+      String amount = movimiento.amount.toCurrencyString(
+        useSymbolPadding: true,
+        leadingSymbol: '\$',
+      );
+
+      return {
+        'id': movimiento.id,
+        'amount': amount,
+        'description': movimiento.description,
+        'pay': movimiento.pay,
+        'tag': movimiento.tag,
+        'fechaC': movimiento.fechaC,
+      };
+    }
+
+    return {
       'amount': 0,
       'description': '',
       'pay': '',
       'tag': '',
     };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: Reparar cuando no tenga el argumento
+    final RouteSettings? settings = ModalRoute.of(context)?.settings;
+
+    final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
+    final Map<String, dynamic> formValues = getJson(settings);
 
     return Scaffold(
       appBar: AppBar(
@@ -34,6 +59,7 @@ class MovimientoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 70),
                   child: TextFormField(
                     autofocus: true,
+                    initialValue: formValues['amount'],
                     textAlign: TextAlign.right,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
@@ -43,9 +69,15 @@ class MovimientoScreen extends StatelessWidget {
                       fontSize: 35,
                     ),
                     inputFormatters: [
-                      CurrencyInputFormatter(leadingSymbol: '\$'),
+                      CurrencyInputFormatter(
+                        leadingSymbol: '\$',
+                        useSymbolPadding: true,
+                        onValueChange: (value) {
+                          print(value);
+                          formValues['amount'] = value;
+                        },
+                      )
                     ],
-                    onChanged: (value) => formValues['amount'] = value,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -53,6 +85,7 @@ class MovimientoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: TextFormField(
                     autofocus: true,
+                    initialValue: formValues['description'],
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       labelText: 'Descripción',
@@ -60,38 +93,38 @@ class MovimientoScreen extends StatelessWidget {
                     onChanged: (value) => formValues['description'] = value,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: _DropdownButtonCustom(
-                    value: list.first,
-                    items: list.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      formValues['pay'] = value;
-                      print(value);
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: _DropdownButtonCustom(
-                    value: tag.first,
-                    items: tag.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      formValues['tag'] = value;
-                      print(value);
-                    },
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 30),
+                //   child: _DropdownButtonCustom(
+                //     value: list.first,
+                //     items: list.map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         child: Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (value) {
+                //       formValues['pay'] = value;
+                //       print(value);
+                //     },
+                //   ),
+                // ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 30),
+                //   child: _DropdownButtonCustom(
+                //     value: tag.first,
+                //     items: tag.map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         child: Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (value) {
+                //       formValues['tag'] = value;
+                //       print(value);
+                //     },
+                //   ),
+                // ),
               ],
             )),
       ),
@@ -102,7 +135,6 @@ class MovimientoScreen extends StatelessWidget {
 
 class _DropdownButtonCustom extends StatelessWidget {
   const _DropdownButtonCustom({
-    super.key,
     required this.value,
     required this.items,
     required this.onChanged,
@@ -128,9 +160,13 @@ class _DropdownButtonCustom extends StatelessWidget {
 }
 
 class _Footer extends StatelessWidget {
-  const _Footer({required this.formValues});
+  _Footer({required this.formValues});
 
   void _onSummit() {
+    formValues = {
+      ...formValues,
+      'fechaC': DateTime.now(),
+    };
     print(formValues);
   }
 
@@ -138,7 +174,7 @@ class _Footer extends StatelessWidget {
     print('Reset form');
   }
 
-  final Map<String, dynamic> formValues;
+  Map<String, dynamic> formValues;
 
   @override
   Widget build(BuildContext context) {
