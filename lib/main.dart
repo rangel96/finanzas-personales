@@ -1,11 +1,11 @@
-import 'package:finanzas_personales/providers/flutterfire.dart';
-import 'package:finanzas_personales/routes/app_routes.dart';
-import 'package:finanzas_personales/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+
+import 'package:finanzas_personales/services/_services.dart';
+import 'package:finanzas_personales/routes/app_routes.dart';
+import 'package:finanzas_personales/themes/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,15 +23,14 @@ class AppState extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (_) => FlutterFireProvider(), lazy: false),
+        ChangeNotifierProvider(create: (_) => RegistrosService(), lazy: false),
+        ChangeNotifierProvider(create: (_) => PayService()),
+        ChangeNotifierProvider(create: (_) => TagService()),
       ],
       child: const MyApp(),
     );
   }
 }
-
-// void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -1,225 +1,227 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:finanzas_personales/models/_models.dart';
+import 'package:finanzas_personales/widgets/_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
-import 'package:finanzas_personales/models/_models.dart';
+import 'package:finanzas_personales/providers/registro_form.dart';
+import 'package:finanzas_personales/services/_services.dart';
 import 'package:finanzas_personales/themes/app_theme.dart';
-
-const List<String> list = <String>['Efectivo', 'Nu', 'Rappi Card', 'Banorte'];
-const List<String> tag = <String>['Suscripción', 'Housing', 'Comida', 'Renta'];
 
 class MovimientoScreen extends StatelessWidget {
   const MovimientoScreen({Key? key}) : super(key: key);
 
-  // Variables
-  Map<String, dynamic> getJson([RouteSettings? settings]) {
-    if (settings?.arguments != null) {
-      ResponseRegistro movimiento = settings!.arguments as ResponseRegistro;
+  @override
+  Widget build(BuildContext context) {
+    final registrosService = Provider.of<RegistrosService>(context);
 
-      String amount = movimiento.amount.toCurrencyString(
-        useSymbolPadding: true,
-        leadingSymbol: '\$',
-      );
-
-      return {
-        'id': movimiento.id,
-        'amount': amount,
-        'description': movimiento.description,
-        'pay': movimiento.pay,
-        'tag': movimiento.tag,
-        'fechaC': movimiento.fechaC,
-      };
-    }
-
-    return {
-      'amount': '\$0.00',
-      'description': '',
-      'pay': '',
-      'tag': '',
-    };
+    return ChangeNotifierProvider(
+      create: (_) => RegistroForm(registrosService.selectRegistro),
+      child: _RegistroScreenBody(registrosService: registrosService),
+    );
   }
+}
+
+class _RegistroScreenBody extends StatelessWidget {
+  const _RegistroScreenBody({
+    required this.registrosService,
+  });
+
+  final RegistrosService registrosService;
 
   @override
   Widget build(BuildContext context) {
-    final RouteSettings? settings = ModalRoute.of(context)?.settings;
-
-    final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
-    final Map<String, dynamic> formValues = getJson(settings);
+    final registroForm = Provider.of<RegistroForm>(context);
+    final registro = registroForm.registro;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Movimiento'),
       ),
       body: Center(
-        child: Form(
-            key: myFormKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 70),
-                  child: TextFormField(
-                    autofocus: true,
-                    initialValue: formValues['amount'],
-                    textAlign: TextAlign.right,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Precio',
-                    ),
-                    style: const TextStyle(
-                      fontSize: 35,
-                    ),
-                    inputFormatters: [
-                      CurrencyInputFormatter(
-                        leadingSymbol: '\$',
-                        useSymbolPadding: true,
-                        onValueChange: (value) {
-                          print(value);
-                          formValues['amount'] = value;
-                        },
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: TextFormField(
-                    autofocus: true,
-                    initialValue: formValues['description'],
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      labelText: 'Descripción',
-                    ),
-                    onChanged: (value) => formValues['description'] = value,
-                  ),
-                ),
-                // Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 30),
-                //   child: _DropdownButtonCustom(
-                //     value: list.first,
-                //     items: list.map<DropdownMenuItem<String>>((String value) {
-                //       return DropdownMenuItem<String>(
-                //         value: value,
-                //         child: Text(value),
-                //       );
-                //     }).toList(),
-                //     onChanged: (value) {
-                //       formValues['pay'] = value;
-                //       print(value);
-                //     },
-                //   ),
-                // ),
-                // Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 30),
-                //   child: _DropdownButtonCustom(
-                //     value: tag.first,
-                //     items: tag.map<DropdownMenuItem<String>>((String value) {
-                //       return DropdownMenuItem<String>(
-                //         value: value,
-                //         child: Text(value),
-                //       );
-                //     }).toList(),
-                //     onChanged: (value) {
-                //       formValues['tag'] = value;
-                //       print(value);
-                //     },
-                //   ),
-                // ),
-              ],
-            )),
+        child: _RegistroForm(registroForm: registroForm),
       ),
-      bottomNavigationBar: _Footer(formValues: formValues),
+      bottomNavigationBar: _footer(
+        context,
+        registrosService,
+        registroForm,
+        registro,
+      ),
     );
   }
 }
 
-class _DropdownButtonCustom extends StatelessWidget {
-  const _DropdownButtonCustom({
-    Key? key,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  }) : super(key: key);
+class _RegistroForm extends StatelessWidget {
+  const _RegistroForm({
+    required this.registroForm,
+  });
 
-  final String value;
-  final List<DropdownMenuItem<String>> items;
-  final void Function(String?)? onChanged;
+  final RegistroForm registroForm;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton(
-      value: value,
-      isExpanded: true,
-      underline: Container(
-        height: 1,
-        color: Colors.grey,
-      ),
-      items: items,
-      onChanged: onChanged,
-    );
+    final payList = Provider.of<PayService>(context).payList;
+
+    final registro = registroForm.registro;
+    if (registro.pay == '' && payList.isNotEmpty) registro.pay = payList.first;
+
+    final tagList = Provider.of<TagService>(context).tagList;
+    if (registro.tag == '' && tagList.isNotEmpty) registro.tag = tagList.first;
+
+    return Form(
+        key: registroForm.formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Precio
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 70),
+              child: TextFormField(
+                autofocus: true,
+                initialValue: '\$ ${registro.amount}',
+                textAlign: TextAlign.right,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Precio',
+                ),
+                style: const TextStyle(
+                  fontSize: 35,
+                ),
+                inputFormatters: [
+                  CurrencyInputFormatter(
+                    leadingSymbol: '\$',
+                    useSymbolPadding: true,
+                    onValueChange: (value) {
+                      registro.amount = value.toDouble();
+                    },
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Title
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: TextFormField(
+                autofocus: true,
+                initialValue: registro.title,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre',
+                ),
+                onChanged: (value) => registro.title = value,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Description
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: TextFormField(
+                autofocus: true,
+                initialValue: registro.description,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  labelText: 'Descripción',
+                ),
+                onChanged: (value) => registro.description = value,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Pay
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: DropdownButtonWidget(
+                list: payList,
+                value: registro.pay,
+                onChanged: (value) {
+                  if (value == null) return;
+
+                  registro.pay = value;
+                  registroForm.updatePay(value);
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Tag
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: DropdownButtonWidget(
+                list: tagList,
+                value: registro.tag,
+                onChanged: (value) {
+                  if (value == null) return;
+
+                  registro.tag = value;
+                  registroForm.updateTag(value);
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
+          ],
+        ));
   }
 }
 
-class _Footer extends StatelessWidget {
-  _Footer({required this.formValues});
-
-  void _onSummit() {
-    formValues = {
-      ...formValues,
-      'fechaC': DateTime.now(),
-    };
-    print(formValues);
+Widget _footer(
+  BuildContext context,
+  RegistrosService registrosService,
+  RegistroForm registroForm,
+  RegistroModel formValues,
+) {
+  void onSummit() {
+    formValues.fechaC = DateTime.now();
+    registrosService.addUpdateMovimiento(formValues);
+    Navigator.pop(context);
   }
 
-  void _onReset() {
-    print('Reset form');
+  void onReset() {
+    // TODO: Que funcione el reset
+    print('onReset');
   }
 
-  Map<String, dynamic> formValues;
+  Size size = MediaQuery.of(context).size;
+  final double width = size.width / 2;
+  const double height = 60;
+  const double fontSize = 25;
 
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    final double width = size.width / 2;
-    const double height = 60;
-    const double fontSize = 25;
-
-    return Row(
-      children: [
-        TextButton(
-          style: ButtonStyle(
-            backgroundColor: const MaterialStatePropertyAll<Color>(
-              AppTheme.colorAdd,
-            ),
-            fixedSize: MaterialStatePropertyAll(Size(width, height)),
+  return Row(
+    children: [
+      TextButton(
+        style: ButtonStyle(
+          backgroundColor: const MaterialStatePropertyAll<Color>(
+            AppTheme.colorAdd,
           ),
-          onPressed: _onSummit,
-          child: const Text(
-            'Agregar',
-            style: TextStyle(
-              fontSize: fontSize,
-              color: Colors.white,
-            ),
+          fixedSize: MaterialStatePropertyAll(Size(width, height)),
+        ),
+        onPressed: onSummit,
+        child: const Text(
+          'Agregar',
+          style: TextStyle(
+            fontSize: fontSize,
+            color: Colors.white,
           ),
         ),
-        TextButton(
-          style: ButtonStyle(
-            backgroundColor: const MaterialStatePropertyAll<Color>(
-              AppTheme.colorReset,
-            ),
-            fixedSize: MaterialStatePropertyAll(Size(width, height)),
+      ),
+      TextButton(
+        style: ButtonStyle(
+          backgroundColor: const MaterialStatePropertyAll<Color>(
+            AppTheme.colorReset,
           ),
-          onPressed: _onReset,
-          child: const Text(
-            'Limpiar',
-            style: TextStyle(
-              fontSize: fontSize,
-              color: Colors.white,
-            ),
+          fixedSize: MaterialStatePropertyAll(Size(width, height)),
+        ),
+        onPressed: onReset,
+        child: const Text(
+          'Limpiar',
+          style: TextStyle(
+            fontSize: fontSize,
+            color: Colors.white,
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }

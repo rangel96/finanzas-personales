@@ -1,15 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:math' show Random;
-
-import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:finanzas_personales/providers/flutterfire.dart';
+import 'package:finanzas_personales/services/registros_service.dart';
 import 'package:finanzas_personales/themes/app_theme.dart';
-
-import '../models/_models.dart';
+import 'package:finanzas_personales/models/_models.dart';
 
 // Variables globales
 const FontWeight _fontWeight = FontWeight.w600;
@@ -36,9 +32,9 @@ class MovimientosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterFireProvider movProvider = Provider.of<FlutterFireProvider>(context);
-    List<ResponseRegistro> registros = movProvider.registros;
-    double sumTotal = Provider.of<FlutterFireProvider>(context).sumTotal;
+    final registroServices = Provider.of<RegistrosService>(context);
+    List<RegistroModel> registros = registroServices.registros;
+    double sumTotal = Provider.of<RegistrosService>(context).sumTotal;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,6 +47,7 @@ class MovimientosScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // Total
           Container(
             margin: const EdgeInsets.symmetric(vertical: 5),
             child: Text(
@@ -61,12 +58,15 @@ class MovimientosScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Registro List
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) => Slidable(
                 startActionPane: ActionPane(
                   motion: const StretchMotion(),
-                  children: _slidableActionListL(registros[index]),
+                  children:
+                      _slidableActionList(registroServices, registros[index]),
                 ),
                 child: _Movimiento(movimiento: registros[index]),
               ),
@@ -76,29 +76,48 @@ class MovimientosScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _Footer(),
+      bottomNavigationBar: _Footer(registroServices: registroServices),
     );
   }
 }
 
 class _Footer extends StatelessWidget {
+  const _Footer({required this.registroServices});
+
+  final RegistrosService registroServices;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return TextButton(
-      style: ButtonStyle(
-          backgroundColor: const MaterialStatePropertyAll<Color>(
-            AppTheme.colorFooter,
-          ),
-          fixedSize: MaterialStatePropertyAll(Size(size.width, 55))),
-      onPressed: () => Navigator.pushNamed(context, 'movimiento'),
+      style: _footerButtonStyle(size),
+      onPressed: () {
+        final DateTime today = DateTime.now();
+        final registro = RegistroModel(
+          amount: 0,
+          fechaC: today,
+          pay: '',
+          tag: '',
+          title: '',
+        );
+
+        registroServices.selectRegistro = registro;
+        Navigator.pushNamed(context, 'movimiento');
+      },
       child: const Text(
         'Agregar',
-        style: TextStyle(
-          fontSize: 20,
-          color: Colors.black,
-        ),
+        style: TextStyle(fontSize: 20, color: Colors.black),
       ),
+    );
+  }
+
+  ButtonStyle _footerButtonStyle(Size size) {
+    return ButtonStyle(
+      backgroundColor: const MaterialStatePropertyAll<Color>(
+        AppTheme.colorFooter,
+      ),
+      fixedSize: MaterialStatePropertyAll(Size(size.width, 60)),
+      alignment: Alignment.topCenter,
     );
   }
 }
@@ -106,21 +125,24 @@ class _Footer extends StatelessWidget {
 class _Movimiento extends StatelessWidget {
   const _Movimiento({required this.movimiento});
 
-  final ResponseRegistro movimiento;
+  final RegistroModel movimiento;
 
   @override
   Widget build(BuildContext context) {
+    String color = '90AFC5';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Title, Amount
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Title
               Expanded(
                 child: Text(
-                  movimiento.description,
+                  movimiento.title,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: _fontWeight,
@@ -128,6 +150,8 @@ class _Movimiento extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+
+              // Amount
               Text(
                 numberFormat.format(movimiento.amount),
                 style: const TextStyle(
@@ -138,21 +162,30 @@ class _Movimiento extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 5),
+
+          //
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Date, Pay
               Row(
                 children: [
-                  if (movimiento.fechaC.day > 9)
-                    Text('${movimiento.fechaC.day}')
+                  // Date
+                  if (movimiento.fechaC!.day > 9)
+                    Text('${movimiento.fechaC!.day}')
                   else
-                    Text('0${movimiento.fechaC.day}'),
+                    Text('0${movimiento.fechaC!.day}'),
                   const SizedBox(width: 10, child: Text('-')),
-                  Text('${movimiento.fechaC.hour}:${movimiento.fechaC.minute}'),
+                  Text(
+                      '${movimiento.fechaC!.hour}:${movimiento.fechaC!.minute}'),
                   const SizedBox(width: 10, child: Text('-')),
+
+                  // Pay
                   Text(movimiento.pay),
                 ],
               ),
+
+              // Tag
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 15,
@@ -160,13 +193,14 @@ class _Movimiento extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.amber,
+                  color: Color(int.parse('0xff$color')),
                 ),
-                child: Icon(
-                  Icons.subscriptions_outlined,
-                  size: 15.0,
-                  semanticLabel: movimiento.tag,
-                ),
+                // child: Icon(
+                //   Icons.subscriptions_outlined,
+                //   size: 15.0,
+                //   semanticLabel: movimiento.tag,
+                // ),
+                child: Text(movimiento.tag),
               ),
             ],
           ),
@@ -176,24 +210,30 @@ class _Movimiento extends StatelessWidget {
   }
 }
 
-List<Widget> _slidableActionListL(ResponseRegistro movimiento) {
+List<Widget> _slidableActionList(
+  RegistrosService registrosServices,
+  RegistroModel registro,
+) {
+  void editRegistro(BuildContext context) {
+    registrosServices.selectRegistro = registro;
+    Navigator.pushNamed(context, 'movimiento');
+  }
+
+  void deleteRegistro() {
+    print('eliminado ;) *giño, giño*');
+    // registrosServices.deleteMovimiento(registro);
+  }
+
   return [
     SlidableAction(
-      onPressed: (_) {
-        // todo: Delete item
-        print(movimiento.id);
-      },
+      onPressed: (_) => deleteRegistro(),
       backgroundColor: const Color(0xFFFE4A49),
       foregroundColor: Colors.white,
       icon: Icons.delete,
       label: 'Eliminar',
     ),
     SlidableAction(
-      onPressed: (context) => Navigator.pushNamed(
-        context,
-        'movimiento',
-        arguments: movimiento,
-      ),
+      onPressed: editRegistro,
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
       icon: Icons.edit,
