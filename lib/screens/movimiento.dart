@@ -36,6 +36,7 @@ class _RegistroScreenBody extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Movimiento'),
       ),
       body: Center(

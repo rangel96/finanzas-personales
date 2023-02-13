@@ -39,6 +39,7 @@ class MovimientosScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
+        centerTitle: true,
         title: Text(
           'Movimientos \n ${month[now.month - 1]}',
           style: const TextStyle(fontSize: 20),
@@ -62,11 +63,15 @@ class MovimientosScreen extends StatelessWidget {
           // Registro List
           Expanded(
             child: ListView.separated(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) => Slidable(
                 startActionPane: ActionPane(
                   motion: const StretchMotion(),
-                  children:
-                      _slidableActionList(registroServices, registros[index]),
+                  children: _slidableActionList(
+                    registroServices,
+                    registros[index],
+                  ),
                 ),
                 child: _Movimiento(movimiento: registros[index]),
               ),
@@ -76,6 +81,8 @@ class MovimientosScreen extends StatelessWidget {
           ),
         ],
       ),
+
+      // Footer
       bottomNavigationBar: _Footer(registroServices: registroServices),
     );
   }
@@ -220,8 +227,7 @@ List<Widget> _slidableActionList(
   }
 
   void deleteRegistro() {
-    print('eliminado ;) *giño, giño*');
-    // registrosServices.deleteMovimiento(registro);
+    registrosServices.deleteMovimiento(registro);
   }
 
   return [
