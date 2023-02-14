@@ -136,7 +136,7 @@ class _RegistroForm extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: DropdownButtonWidget(
                 list: payList,
-                value: registro.pay,
+                value: registro.pay ?? '',
                 onChanged: (value) {
                   if (value == null) return;
 
@@ -152,7 +152,7 @@ class _RegistroForm extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: DropdownButtonWidget(
                 list: tagList,
-                value: registro.tag,
+                value: registro.tag ?? '',
                 onChanged: (value) {
                   if (value == null) return;
 
@@ -179,13 +179,8 @@ Widget _footer(
     Navigator.pop(context);
   }
 
-  void onReset() {
-    // TODO: Que funcione el reset
-    print('onReset');
-  }
-
   Size size = MediaQuery.of(context).size;
-  final double width = size.width / 2;
+  final double width = size.width;
   const double height = 60;
   const double fontSize = 25;
 
@@ -201,22 +196,6 @@ Widget _footer(
         onPressed: onSummit,
         child: const Text(
           'Agregar',
-          style: TextStyle(
-            fontSize: fontSize,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      TextButton(
-        style: ButtonStyle(
-          backgroundColor: const MaterialStatePropertyAll<Color>(
-            AppTheme.colorReset,
-          ),
-          fixedSize: MaterialStatePropertyAll(Size(width, height)),
-        ),
-        onPressed: onReset,
-        child: const Text(
-          'Limpiar',
           style: TextStyle(
             fontSize: fontSize,
             color: Colors.white,

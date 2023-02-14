@@ -32,6 +32,7 @@ class MovimientosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
     final registroServices = Provider.of<RegistrosService>(context);
     List<RegistroModel> registros = registroServices.registros;
     double sumTotal = Provider.of<RegistrosService>(context).sumTotal;
@@ -99,14 +100,7 @@ class _Footer extends StatelessWidget {
     return TextButton(
       style: _footerButtonStyle(size),
       onPressed: () {
-        final DateTime today = DateTime.now();
-        final registro = RegistroModel(
-          amount: 0,
-          fechaC: today,
-          pay: '',
-          tag: '',
-          title: '',
-        );
+        final registro = RegistroModel(amount: 0.00, title: '');
 
         registroServices.selectRegistro = registro;
         Navigator.pushNamed(context, 'movimiento');
@@ -149,7 +143,7 @@ class _Movimiento extends StatelessWidget {
               // Title
               Expanded(
                 child: Text(
-                  movimiento.title,
+                  movimiento.title!,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: _fontWeight,
@@ -188,7 +182,7 @@ class _Movimiento extends StatelessWidget {
                   const SizedBox(width: 10, child: Text('-')),
 
                   // Pay
-                  Text(movimiento.pay),
+                  Text(movimiento.pay!),
                 ],
               ),
 
@@ -207,7 +201,7 @@ class _Movimiento extends StatelessWidget {
                 //   size: 15.0,
                 //   semanticLabel: movimiento.tag,
                 // ),
-                child: Text(movimiento.tag),
+                child: Text(movimiento.tag!),
               ),
             ],
           ),
