@@ -1,5 +1,3 @@
-import 'package:finanzas_personales/models/_models.dart';
-import 'package:finanzas_personales/widgets/_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -7,6 +5,8 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:finanzas_personales/providers/registro_form.dart';
 import 'package:finanzas_personales/services/_services.dart';
 import 'package:finanzas_personales/themes/app_theme.dart';
+import 'package:finanzas_personales/models/_models.dart';
+import 'package:finanzas_personales/widgets/_widgets.dart';
 
 class MovimientoScreen extends StatelessWidget {
   const MovimientoScreen({Key? key}) : super(key: key);
@@ -42,12 +42,25 @@ class _RegistroScreenBody extends StatelessWidget {
       body: Center(
         child: _RegistroForm(registroForm: registroForm),
       ),
-      bottomNavigationBar: _footer(
-        context,
-        registrosService,
-        registroForm,
-        registro,
+
+      // Footer
+      bottomNavigationBar: FooterButton(
+        title: 'Registrar',
+        backgroundColor: AppTheme.colorReset,
+        color: Colors.white,
+        onPressed: () {
+          registro.fechaC ??= DateTime.now();
+
+          registrosService.addUpdateMovimiento(registro);
+          Navigator.pop(context);
+        },
       ),
+      // bottomNavigationBar: _footer(
+      //   context,
+      //   registrosService,
+      //   registroForm,
+      //   registro,
+      // ),
     );
   }
 }
@@ -61,16 +74,13 @@ class _RegistroForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final payList = Provider.of<PayService>(context).payList;
-
     final registro = registroForm.registro;
-    if (registro.pay == '' && payList.isNotEmpty) registro.pay = payList.first;
-
+    final payList = Provider.of<PayService>(context).payList;
     final tagList = Provider.of<TagService>(context).tagList;
-    if (registro.tag == '' && tagList.isNotEmpty) registro.tag = tagList.first;
 
     return Form(
         key: registroForm.formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -79,15 +89,12 @@ class _RegistroForm extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: TextFormField(
                 autofocus: true,
-                initialValue: '\$ ${registro.amount}',
+                initialValue:
+                    registro.amount != null ? '\$ ${registro.amount}' : '',
                 textAlign: TextAlign.right,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Precio',
-                ),
-                style: const TextStyle(
-                  fontSize: 35,
-                ),
+                decoration: const InputDecoration(labelText: 'Precio'),
+                style: const TextStyle(fontSize: 35),
                 inputFormatters: [
                   CurrencyInputFormatter(
                     leadingSymbol: '\$',
@@ -108,9 +115,7 @@ class _RegistroForm extends StatelessWidget {
                 autofocus: true,
                 initialValue: registro.title,
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                ),
+                decoration: const InputDecoration(labelText: 'Nombre'),
                 onChanged: (value) => registro.title = value,
               ),
             ),
@@ -123,9 +128,7 @@ class _RegistroForm extends StatelessWidget {
                 autofocus: true,
                 initialValue: registro.description,
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                ),
+                decoration: const InputDecoration(labelText: 'Descripción'),
                 onChanged: (value) => registro.description = value,
               ),
             ),
@@ -161,7 +164,7 @@ class _RegistroForm extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
           ],
         ));
   }
@@ -174,7 +177,8 @@ Widget _footer(
   RegistroModel formValues,
 ) {
   void onSummit() {
-    formValues.fechaC = DateTime.now();
+    formValues.fechaC ??= DateTime.now();
+
     registrosService.addUpdateMovimiento(formValues);
     Navigator.pop(context);
   }
@@ -189,7 +193,7 @@ Widget _footer(
       TextButton(
         style: ButtonStyle(
           backgroundColor: const MaterialStatePropertyAll<Color>(
-            AppTheme.colorAdd,
+            AppTheme.colorReset,
           ),
           fixedSize: MaterialStatePropertyAll(Size(width, height)),
         ),

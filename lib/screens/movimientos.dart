@@ -1,3 +1,4 @@
+import 'package:finanzas_personales/widgets/_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +85,14 @@ class MovimientosScreen extends StatelessWidget {
       ),
 
       // Footer
-      bottomNavigationBar: _Footer(registroServices: registroServices),
+      bottomNavigationBar: FooterButton(
+        title: 'Agregar',
+        backgroundColor: AppTheme.colorFooter,
+        onPressed: () {
+          registroServices.selectRegistro = RegistroModel();
+          Navigator.pushNamed(context, 'movimiento');
+        },
+      ),
     );
   }
 }
@@ -100,7 +108,7 @@ class _Footer extends StatelessWidget {
     return TextButton(
       style: _footerButtonStyle(size),
       onPressed: () {
-        final registro = RegistroModel(amount: 0.00, title: '');
+        final registro = RegistroModel();
 
         registroServices.selectRegistro = registro;
         Navigator.pushNamed(context, 'movimiento');
@@ -182,7 +190,7 @@ class _Movimiento extends StatelessWidget {
                   const SizedBox(width: 10, child: Text('-')),
 
                   // Pay
-                  Text(movimiento.pay!),
+                  Text(movimiento.pay ?? ''),
                 ],
               ),
 
@@ -201,7 +209,7 @@ class _Movimiento extends StatelessWidget {
                 //   size: 15.0,
                 //   semanticLabel: movimiento.tag,
                 // ),
-                child: Text(movimiento.tag!),
+                child: Text(movimiento.tag ?? ''),
               ),
             ],
           ),
