@@ -5,7 +5,6 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:finanzas_personales/providers/registro_form.dart';
 import 'package:finanzas_personales/services/_services.dart';
 import 'package:finanzas_personales/themes/app_theme.dart';
-import 'package:finanzas_personales/models/_models.dart';
 import 'package:finanzas_personales/widgets/_widgets.dart';
 
 class MovimientoScreen extends StatelessWidget {
@@ -34,33 +33,34 @@ class _RegistroScreenBody extends StatelessWidget {
     final registroForm = Provider.of<RegistroForm>(context);
     final registro = registroForm.registro;
 
+    final payList = Provider.of<PayService>(context).payList;
+    final tagList = Provider.of<TagService>(context).tagList;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Movimiento'),
       ),
       body: Center(
-        child: _RegistroForm(registroForm: registroForm),
+        child: _RegistroForm(
+          registroForm: registroForm,
+          payList: payList,
+          tagList: tagList,
+        ),
       ),
-
-      // Footer
       bottomNavigationBar: FooterButton(
-        title: 'Registrar',
+        title: registro.id != null ? 'Actualizar' : 'Registrar',
         backgroundColor: AppTheme.colorReset,
         color: Colors.white,
         onPressed: () {
           registro.fechaC ??= DateTime.now();
 
+          if (!registroForm.isValidForm()) return;
+
           registrosService.addUpdateMovimiento(registro);
           Navigator.pop(context);
         },
       ),
-      // bottomNavigationBar: _footer(
-      //   context,
-      //   registrosService,
-      //   registroForm,
-      //   registro,
-      // ),
     );
   }
 }
@@ -68,15 +68,37 @@ class _RegistroScreenBody extends StatelessWidget {
 class _RegistroForm extends StatelessWidget {
   const _RegistroForm({
     required this.registroForm,
+    required this.payList,
+    required this.tagList,
   });
 
   final RegistroForm registroForm;
+  final List<String> payList;
+  final List<String> tagList;
 
   @override
   Widget build(BuildContext context) {
     final registro = registroForm.registro;
-    final payList = Provider.of<PayService>(context).payList;
-    final tagList = Provider.of<TagService>(context).tagList;
+    var amount = '';
+
+    if (payList.isNotEmpty) {
+      registro.pay = payList.first;
+    }
+
+    if (tagList.isNotEmpty) {
+      registro.tag = tagList.first;
+    }
+
+    // if (registro.amount != null) {
+    //   registro.amount = toCurrencyString(registro.amount.toString());
+    // }
+    String toCurrency(double value) {
+      return toCurrencyString(
+        value.toString(),
+        leadingSymbol: '\$',
+        useSymbolPadding: true,
+      );
+    }
 
     return Form(
         key: registroForm.formKey,
@@ -89,8 +111,13 @@ class _RegistroForm extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: TextFormField(
                 autofocus: true,
-                initialValue:
-                    registro.amount != null ? '\$ ${registro.amount}' : '',
+                initialValue: registro.amount != null
+                    // ? '\$ ${registro.amount}'
+                    ? toCurrency(registro.amount!)
+                    : '',
+                // toCurrency(registro.amount.toString()),
+                validator: (value) =>
+                    (value == null || value.length < 2) ? '* Requerido' : null,
                 textAlign: TextAlign.right,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Precio'),
@@ -114,6 +141,11 @@ class _RegistroForm extends StatelessWidget {
               child: TextFormField(
                 autofocus: true,
                 initialValue: registro.title,
+                validator: (value) {
+                  return (value == null || value.length < 2)
+                      ? '* Requerido'
+                      : null;
+                },
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(labelText: 'Nombre'),
                 onChanged: (value) => registro.title = value,
@@ -168,44 +200,4 @@ class _RegistroForm extends StatelessWidget {
           ],
         ));
   }
-}
-
-Widget _footer(
-  BuildContext context,
-  RegistrosService registrosService,
-  RegistroForm registroForm,
-  RegistroModel formValues,
-) {
-  void onSummit() {
-    formValues.fechaC ??= DateTime.now();
-
-    registrosService.addUpdateMovimiento(formValues);
-    Navigator.pop(context);
-  }
-
-  Size size = MediaQuery.of(context).size;
-  final double width = size.width;
-  const double height = 60;
-  const double fontSize = 25;
-
-  return Row(
-    children: [
-      TextButton(
-        style: ButtonStyle(
-          backgroundColor: const MaterialStatePropertyAll<Color>(
-            AppTheme.colorReset,
-          ),
-          fixedSize: MaterialStatePropertyAll(Size(width, height)),
-        ),
-        onPressed: onSummit,
-        child: const Text(
-          'Agregar',
-          style: TextStyle(
-            fontSize: fontSize,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ],
-  );
 }

@@ -97,40 +97,6 @@ class MovimientosScreen extends StatelessWidget {
   }
 }
 
-class _Footer extends StatelessWidget {
-  const _Footer({required this.registroServices});
-
-  final RegistrosService registroServices;
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return TextButton(
-      style: _footerButtonStyle(size),
-      onPressed: () {
-        final registro = RegistroModel();
-
-        registroServices.selectRegistro = registro;
-        Navigator.pushNamed(context, 'movimiento');
-      },
-      child: const Text(
-        'Agregar',
-        style: TextStyle(fontSize: 20, color: Colors.black),
-      ),
-    );
-  }
-
-  ButtonStyle _footerButtonStyle(Size size) {
-    return ButtonStyle(
-      backgroundColor: const MaterialStatePropertyAll<Color>(
-        AppTheme.colorFooter,
-      ),
-      fixedSize: MaterialStatePropertyAll(Size(size.width, 60)),
-      alignment: Alignment.topCenter,
-    );
-  }
-}
-
 class _Movimiento extends StatelessWidget {
   const _Movimiento({required this.movimiento});
 
@@ -224,7 +190,7 @@ List<Widget> _slidableActionList(
   RegistroModel registro,
 ) {
   void editRegistro(BuildContext context) {
-    registrosServices.selectRegistro = registro;
+    registrosServices.selectRegistro = registro.copy();
     Navigator.pushNamed(context, 'movimiento');
   }
 
