@@ -79,7 +79,6 @@ class _RegistroForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final registro = registroForm.registro;
-    var amount = '';
 
     if (payList.isNotEmpty) {
       registro.pay = payList.first;

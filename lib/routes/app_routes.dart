@@ -9,6 +9,7 @@ class AppRoutes {
 
     appRoutes.addAll({'movimientos': (_) => const MovimientosScreen()});
     appRoutes.addAll({'movimiento': (_) => const MovimientoScreen()});
+    appRoutes.addAll({'historial': (_) => const HistorialScreen()});
 
     return appRoutes;
   }

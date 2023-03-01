@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.4.1
   firebase_database: ^10.0.9
+  fl_chart: ^0.61.0
   flutter:
     sdk: flutter
   flutter_multi_formatter: ^2.10.2
@@ -40,16 +41,10 @@ dependencies:
   provider: ^6.0.5
 
 dev_dependencies:
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  flutter_launcher_icons: ^0.11.0
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.11.0
 
 # Set icon
 # flutter_icons:
@@ -69,7 +64,6 @@ dev_dependencies:
 #   macos:
 #     generate: true
 #     image_path: "path/to/background_totalplay.jpg"
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.

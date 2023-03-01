@@ -26,6 +26,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RegistrosService(), lazy: false),
         ChangeNotifierProvider(create: (_) => PayService()),
         ChangeNotifierProvider(create: (_) => TagService()),
+        ChangeNotifierProvider(create: (_) => HistoryServices()),
       ],
       child: const MyApp(),
     );
