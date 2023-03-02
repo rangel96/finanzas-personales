@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>104800812244-cn1mq318nen0990rkl6r43p8sm8ct8v9.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.104800812244-cn1mq318nen0990rkl6r43p8sm8ct8v9</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAti23mwhVq9lLKPYZtvaQJ0Ren4Ctw_2k</string>
+	<key>GCM_SENDER_ID</key>
+	<string>104800812244</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.finanzasPersonales</string>
+	<key>PROJECT_ID</key>
+	<string>finanzas-personales-af41d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>finanzas-personales-af41d.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:104800812244:ios:2c93c1c2ec7e399b5dcf41</string>
+</dict>
+</plist>

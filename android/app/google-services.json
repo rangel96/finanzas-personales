@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "104800812244",
+    "project_id": "finanzas-personales-af41d",
+    "storage_bucket": "finanzas-personales-af41d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:104800812244:android:5e683a01a85032185dcf41",
+        "android_client_info": {
+          "package_name": "com.example.finanzas_personales"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "104800812244-s2ulru8k3uvct0gqnu8k7grs5k8k17r7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx1QTufbHaW3AkGaAQP1Ll-tytsJhAR4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "104800812244-s2ulru8k3uvct0gqnu8k7grs5k8k17r7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "104800812244-cn1mq318nen0990rkl6r43p8sm8ct8v9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.finanzasPersonales"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
