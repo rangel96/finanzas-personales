@@ -110,11 +110,8 @@ class _RegistroForm extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: TextFormField(
                 autofocus: true,
-                initialValue: registro.amount != null
-                    // ? '\$ ${registro.amount}'
-                    ? toCurrency(registro.amount!)
-                    : '',
-                // toCurrency(registro.amount.toString()),
+                initialValue:
+                    registro.amount != null ? toCurrency(registro.amount!) : '',
                 validator: (value) =>
                     (value == null || value.length < 2) ? '* Requerido' : null,
                 textAlign: TextAlign.right,
@@ -175,7 +172,6 @@ class _RegistroForm extends StatelessWidget {
                   if (value == null) return;
 
                   registro.pay = value;
-                  registroForm.updatePay(value);
                 },
               ),
             ),
@@ -191,7 +187,6 @@ class _RegistroForm extends StatelessWidget {
                   if (value == null) return;
 
                   registro.tag = value;
-                  registroForm.updateTag(value);
                 },
               ),
             ),
